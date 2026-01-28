@@ -17,6 +17,7 @@ import { HistoryPanel } from './HistoryPanel';
 import { Footer } from './Footer';
 import { MainCalculator } from '../Calculator/MainCalculator';
 import { createHistoryStore } from '../../engine/historyStore';
+import { useGuidanceVisibility, useEducationalContentVisibility } from '../../hooks/usePreferences';
 
 interface CalculatorLayoutProps {
   mode: CalculatorMode;
@@ -41,7 +42,10 @@ export const CalculatorLayout: React.FC<CalculatorLayoutProps> = ({
   const [historyStore] = useState(() => createHistoryStore());
   const [viewMode, setViewMode] = useState<ViewMode>('normal');
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [showFooter, setShowFooter] = useState(false);
+  
+  // Persistent preferences - NEVER auto-hide
+  const [guidanceVisible, setGuidanceVisible] = useGuidanceVisibility();
+  const [educationalContentVisible, setEducationalContentVisible] = useEducationalContentVisibility();
 
   // Load history on mount
   useEffect(() => {
@@ -115,7 +119,11 @@ export const CalculatorLayout: React.FC<CalculatorLayoutProps> = ({
   const showHistory = viewMode !== 'compact' && historyOpen;
 
   return (
-    <div className="calculator-app h-screen flex flex-col bg-slate-50 overflow-hidden">
+    <div className={`calculator-app flex flex-col overflow-hidden transition-colors
+                    ${isFullscreen 
+                      ? 'fixed inset-0 w-screen h-screen bg-slate-900 z-50' 
+                      : 'h-screen bg-slate-100'}`}
+         style={isFullscreen ? { width: '100vw', height: '100vh' } : undefined}>
       {/* Header - Compact, always visible */}
       <Header 
         mode={mode}
@@ -130,9 +138,11 @@ export const CalculatorLayout: React.FC<CalculatorLayoutProps> = ({
       />
       
       {/* Main Content - Calculator DOMINATES */}
-      <div className="flex-1 flex overflow-hidden min-h-0">
+      <div className={`flex-1 flex overflow-hidden
+                      ${isFullscreen ? 'min-h-0' : 'min-h-0'}`}
+           style={isFullscreen ? { height: 'calc(100vh - 52px)' } : undefined}>
         {/* Left Sidebar - Modes (supportive) */}
-        {viewMode !== 'compact' && (
+        {viewMode !== 'compact' && !isFullscreen && (
           <Sidebar 
             isOpen={showSidebar}
             currentMode={mode}
@@ -142,35 +152,38 @@ export const CalculatorLayout: React.FC<CalculatorLayoutProps> = ({
         )}
         
         {/* CALCULATOR - THE MAIN EVENT */}
-        <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
-          {/* Calculator fills available space */}
-          <div className={`flex-1 flex flex-col min-h-0 overflow-hidden
-                          ${viewMode === 'maximized' ? 'max-w-5xl w-full mx-auto' : ''}
-                          ${viewMode === 'compact' ? 'max-w-lg mx-auto' : ''}`}>
+        <main className={`flex-1 flex flex-col min-w-0 transition-all
+                         ${isFullscreen ? 'h-full overflow-hidden' : 'overflow-hidden'}`}>
+          {/* Calculator fills available space - FIXED HEIGHT IN FULLSCREEN */}
+          <div className={`flex flex-col h-full
+                          ${viewMode === 'maximized' || isFullscreen ? 'max-w-5xl w-full mx-auto' : ''}
+                          ${viewMode === 'compact' ? 'max-w-lg mx-auto' : ''}`}
+               style={isFullscreen ? { height: '100%', minHeight: '100%' } : undefined}>
             <MainCalculator 
               mode={mode}
               onCalculation={handleCalculation}
               viewMode={viewMode}
+              isFullscreen={isFullscreen}
             />
           </div>
           
-          {/* Learn More - Collapsed by default, never pushes calculator */}
-          {viewMode === 'normal' && (
+          {/* Learn More - User-controlled visibility, NEVER auto-hides */}
+          {viewMode === 'normal' && !isFullscreen && (
             <div className="flex-shrink-0 border-t border-slate-200 bg-white">
               <button
-                onClick={() => setShowFooter(!showFooter)}
+                onClick={() => setEducationalContentVisible(!educationalContentVisible)}
                 className="w-full px-4 py-2 text-sm text-slate-500 hover:text-slate-700 
                          hover:bg-slate-50 flex items-center justify-center gap-2 transition-colors"
               >
-                <span>{showFooter ? 'Hide' : 'Learn more about'} {mode} calculator</span>
+                <span>{educationalContentVisible ? 'Hide' : 'Learn more about'} {mode} calculator</span>
                 <svg 
-                  className={`w-4 h-4 transition-transform ${showFooter ? 'rotate-180' : ''}`} 
+                  className={`w-4 h-4 transition-transform ${educationalContentVisible ? 'rotate-180' : ''}`} 
                   fill="none" stroke="currentColor" viewBox="0 0 24 24"
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
-              {showFooter && (
+              {educationalContentVisible && (
                 <div className="max-h-[35vh] overflow-y-auto">
                   <Footer mode={mode} onModeChange={onModeChange} />
                 </div>
@@ -180,10 +193,12 @@ export const CalculatorLayout: React.FC<CalculatorLayoutProps> = ({
         </main>
         
         {/* Right Panel - History (supportive) */}
-        {viewMode !== 'compact' && (
+        {viewMode !== 'compact' && !isFullscreen && (
           <HistoryPanel 
             isOpen={showHistory}
             entries={history}
+            guidanceVisible={guidanceVisible}
+            onGuidanceToggle={() => setGuidanceVisible(!guidanceVisible)}
             onClear={handleClearHistory}
             onPin={handlePinEntry}
             onClose={onHistoryToggle}

@@ -10,6 +10,28 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Fullscreen mode - CRITICAL FIX */
+.calculator-app.fullscreen-mode {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 9999 !important;
+}
+
+/* Ensure fullscreen content fills viewport */
+:fullscreen .calculator-app,
+:-webkit-full-screen .calculator-app,
+:-moz-full-screen .calculator-app {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+}
+
 /* Focus visible for keyboard navigation */
 :focus-visible {
   outline: 2px solid #3b82f6;

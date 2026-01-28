@@ -22,12 +22,14 @@ interface MainCalculatorProps {
   mode: CalculatorMode;
   onCalculation: (expression: string, result: CalculationResult) => void;
   viewMode?: 'normal' | 'maximized' | 'compact';
+  isFullscreen?: boolean;
 }
 
 export const MainCalculator: React.FC<MainCalculatorProps> = ({
   mode,
   onCalculation,
   viewMode = 'normal',
+  isFullscreen = false,
 }) => {
   const [expression, setExpression] = useState('');
   const [result, setResult] = useState<string | null>(null);
@@ -253,11 +255,15 @@ export const MainCalculator: React.FC<MainCalculatorProps> = ({
   // 2. Result (output)  
   // 3. Keypad (ALWAYS VISIBLE)
   return (
-    <div className={`flex-1 flex flex-col p-3 gap-3 overflow-hidden
-                    ${viewMode === 'compact' ? 'max-w-md mx-auto w-full' : ''}`}>
+    <div className={`flex flex-col h-full
+                    ${viewMode === 'compact' ? 'max-w-md mx-auto w-full' : ''}
+                    ${isFullscreen 
+                      ? 'p-4 lg:p-6 xl:p-8' 
+                      : 'p-3'}`}
+         style={isFullscreen ? { height: '100%', display: 'flex', flexDirection: 'column' } : undefined}>
       
-      {/* DISPLAY: Expression + Result */}
-      <div className="flex-shrink-0">
+      {/* DISPLAY: Expression + Result - Fixed height, never shrinks */}
+      <div className={`flex-shrink-0 ${isFullscreen ? 'mb-4 lg:mb-6' : 'mb-3'}`}>
         <CalculatorDisplay
           expression={expression}
           result={result}
@@ -267,16 +273,19 @@ export const MainCalculator: React.FC<MainCalculatorProps> = ({
           inputRef={inputRef}
           onExpressionChange={setExpression}
           onSubmit={evaluateExpression}
+          isFullscreen={isFullscreen}
         />
       </div>
       
-      {/* KEYPAD: Primary interaction - ALWAYS VISIBLE, NEVER HIDDEN */}
-      <div className="flex-1 min-h-0 overflow-y-auto">
+      {/* KEYPAD: Primary interaction - ALWAYS VISIBLE, fills remaining space */}
+      <div className={`flex-1 min-h-0 ${isFullscreen ? 'overflow-hidden' : 'overflow-y-auto'}`}
+           style={isFullscreen ? { flex: '1 1 auto', minHeight: 0 } : undefined}>
         <CalculatorKeypad
           mode={mode}
           onInput={handleInput}
           onAction={handleAction}
           disabled={isCalculating}
+          isFullscreen={isFullscreen}
         />
       </div>
     </div>

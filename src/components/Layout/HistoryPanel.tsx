@@ -7,6 +7,7 @@
  * - Pin important entries
  * - Copy, rename, delete
  * - Mode and time context
+ * - PERSISTENT GUIDANCE that NEVER auto-hides
  */
 
 import React, { useState, useMemo } from 'react';
@@ -15,6 +16,8 @@ import type { HistoryEntry, CalculatorMode } from '../../types';
 interface HistoryPanelProps {
   isOpen: boolean;
   entries: HistoryEntry[];
+  guidanceVisible: boolean;
+  onGuidanceToggle: () => void;
   onClear: () => void;
   onPin: (id: string) => void;
   onClose: () => void;
@@ -75,9 +78,95 @@ const modeColors: Record<CalculatorMode, string> = {
   converter: 'bg-amber-100 text-amber-700',
 };
 
+// Guidance section component - NEVER auto-hides
+const GuidanceSection: React.FC<{ onHide: () => void }> = ({ onHide }) => (
+  <div className="p-4 bg-blue-50 border-b border-blue-100">
+    <div className="flex items-start justify-between mb-3">
+      <h3 className="text-sm font-semibold text-blue-900">What you can do</h3>
+      <button
+        onClick={onHide}
+        className="p-1 text-blue-400 hover:text-blue-600 hover:bg-blue-100 rounded transition-colors"
+        title="Hide guidance"
+        aria-label="Hide guidance"
+      >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div className="space-y-2">
+      <div className="flex items-start gap-2 text-xs text-blue-700">
+        <svg className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+        </svg>
+        <span><strong className="text-blue-800">Pin</strong> important results for quick access</span>
+      </div>
+      <div className="flex items-start gap-2 text-xs text-blue-700">
+        <svg className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        <span><strong className="text-blue-800">Click</strong> any entry to re-run it</span>
+      </div>
+      <div className="flex items-start gap-2 text-xs text-blue-700">
+        <svg className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <span><strong className="text-blue-800">Search</strong> through past calculations</span>
+      </div>
+      <div className="flex items-start gap-2 text-xs text-blue-700">
+        <svg className="w-4 h-4 text-purple-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+        </svg>
+        <span><strong className="text-blue-800">Copy</strong> results to clipboard</span>
+      </div>
+    </div>
+  </div>
+);
+
+// Collapsed pinned view - shows pinned entries when panel is collapsed
+export const CollapsedPinnedView: React.FC<{
+  pinnedEntries: HistoryEntry[];
+  onRerun: (expression: string, mode: CalculatorMode) => void;
+  onExpand: () => void;
+}> = ({ pinnedEntries, onRerun, onExpand }) => {
+  if (pinnedEntries.length === 0) return null;
+  
+  return (
+    <div className="w-12 bg-white border-l border-slate-200 flex flex-col items-center py-2 gap-1">
+      <button
+        onClick={onExpand}
+        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+        title="Expand history"
+      >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </button>
+      <div className="w-8 h-px bg-slate-200 my-1" />
+      {pinnedEntries.slice(0, 5).map((entry) => (
+        <button
+          key={entry.id}
+          onClick={() => onRerun(entry.expression, entry.mode)}
+          className="p-2 text-amber-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+          title={`${entry.expression} = ${entry.result.formatted}`}
+        >
+          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+          </svg>
+        </button>
+      ))}
+      {pinnedEntries.length > 5 && (
+        <span className="text-xs text-slate-400">+{pinnedEntries.length - 5}</span>
+      )}
+    </div>
+  );
+};
+
 export const HistoryPanel: React.FC<HistoryPanelProps> = ({
   isOpen,
   entries,
+  guidanceVisible,
+  onGuidanceToggle,
   onClear,
   onPin,
   onClose,
@@ -99,57 +188,86 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
   
   const grouped = useMemo(() => groupByTime(filteredEntries), [filteredEntries]);
   
-  if (!isOpen) return null;
+  // Show collapsed pinned view when panel is closed
+  if (!isOpen) {
+    return (
+      <CollapsedPinnedView
+        pinnedEntries={grouped.pinned}
+        onRerun={onRerun || (() => {})}
+        onExpand={onClose}
+      />
+    );
+  }
 
   const hasEntries = entries.length > 0;
   const hasResults = filteredEntries.length > 0;
 
   return (
     <aside className="w-80 bg-white border-l border-slate-200 flex flex-col hidden lg:flex">
-      {/* Header */}
-      <div className="flex-shrink-0 px-4 py-3 border-b border-slate-200">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="font-semibold text-slate-900">History</h2>
-          <div className="flex items-center gap-1">
-            {hasEntries && (
+      {/* Header - PERSISTENT, always visible during scrolling */}
+      <div className="flex-shrink-0 border-b border-slate-200">
+        <div className="px-4 py-3">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-semibold text-slate-900">History</h2>
+            <div className="flex items-center gap-1">
+              {/* Show/Hide guidance toggle */}
               <button
-                onClick={onClear}
-                className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                title="Clear all history"
+                onClick={onGuidanceToggle}
+                className={`p-1.5 rounded-lg transition-colors ${
+                  guidanceVisible 
+                    ? 'text-blue-500 hover:text-blue-600 hover:bg-blue-50' 
+                    : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
+                }`}
+                title={guidanceVisible ? 'Hide guidance' : 'Show guidance'}
+                aria-label={guidanceVisible ? 'Hide guidance' : 'Show guidance'}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </button>
-            )}
-            <button
-              onClick={onClose}
-              className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors lg:hidden"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              {hasEntries && (
+                <button
+                  onClick={onClear}
+                  className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                  title="Clear all history"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              )}
+              <button
+                onClick={onClose}
+                className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors lg:hidden"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          {/* Search - PERSISTENT in header */}
+          {hasEntries && (
+            <div className="relative">
+              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-            </button>
-          </div>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search history..."
+                className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-lg
+                         focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300"
+              />
+            </div>
+          )}
         </div>
-        
-        {/* Search */}
-        {hasEntries && (
-          <div className="relative">
-            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search history..."
-              className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-lg
-                       focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300"
-            />
-          </div>
-        )}
       </div>
+      
+      {/* Guidance section - NEVER auto-hides, only hidden by explicit user action */}
+      {guidanceVisible && <GuidanceSection onHide={onGuidanceToggle} />}
       
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
@@ -166,31 +284,6 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
               <p className="text-sm text-slate-500 text-center max-w-[200px]">
                 Every calculation you make appears here for quick reference.
               </p>
-            </div>
-            
-            {/* How history helps */}
-            <div className="mt-auto pt-4 border-t border-slate-100">
-              <p className="text-xs font-medium text-slate-600 mb-3">What you can do:</p>
-              <div className="space-y-2">
-                <div className="flex items-start gap-2 text-xs text-slate-500">
-                  <svg className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                  </svg>
-                  <span><strong className="text-slate-600">Pin</strong> important results for quick access</span>
-                </div>
-                <div className="flex items-start gap-2 text-xs text-slate-500">
-                  <svg className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                  <span><strong className="text-slate-600">Click</strong> any entry to re-run it</span>
-                </div>
-                <div className="flex items-start gap-2 text-xs text-slate-500">
-                  <svg className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                  <span><strong className="text-slate-600">Search</strong> through past calculations</span>
-                </div>
-              </div>
             </div>
           </div>
         ) : !hasResults ? (
@@ -391,3 +484,6 @@ const HistoryItem: React.FC<{
     </div>
   );
 };
+
+// Export groupByTime for testing
+export { groupByTime };
