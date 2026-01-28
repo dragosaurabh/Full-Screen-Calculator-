@@ -1,0 +1,669 @@
+@import "tailwindcss";
+
+/*
+ * Advanced Calculator - CSS Variables and Theme Configuration
+ * 
+ * This file defines CSS custom properties (variables) for:
+ * - Light theme (default)
+ * - High-contrast theme variant (for accessibility - WCAG AA compliance)
+ * 
+ * Requirements: 18.3 (WCAG AA contrast), 19.5 (high-contrast mode)
+ */
+
+/* ============================================
+   TAILWIND CSS v4 THEME CONFIGURATION
+   ============================================ */
+
+@theme {
+  /* Primary color palette - Blue */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+
+  /* Secondary color palette - Slate */
+  --color-secondary-50: #f8fafc;
+  --color-secondary-100: #f1f5f9;
+  --color-secondary-200: #e2e8f0;
+  --color-secondary-300: #cbd5e1;
+  --color-secondary-400: #94a3b8;
+  --color-secondary-500: #64748b;
+  --color-secondary-600: #475569;
+  --color-secondary-700: #334155;
+  --color-secondary-800: #1e293b;
+  --color-secondary-900: #0f172a;
+
+  /* Custom border radius */
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-4xl: 2rem;
+
+  /* Custom shadows */
+  --shadow-subtle: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-soft: 0 2px 4px 0 rgb(0 0 0 / 0.05), 0 1px 2px 0 rgb(0 0 0 / 0.06);
+  --shadow-medium: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  --shadow-elevated: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+  --shadow-button: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-button-hover: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-button-active: inset 0 2px 4px 0 rgb(0 0 0 / 0.1);
+  --shadow-display: inset 0 2px 4px 0 rgb(0 0 0 / 0.06);
+
+  /* Custom spacing */
+  --spacing-18: 4.5rem;
+  --spacing-88: 22rem;
+  --spacing-112: 28rem;
+  --spacing-128: 32rem;
+
+  /* Font families */
+  --font-sans: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, Monaco, monospace;
+
+  /* Custom font sizes */
+  --text-display-lg: 3rem;
+  --text-display-lg--line-height: 1.1;
+  --text-display-lg--font-weight: 600;
+  
+  --text-display-md: 2.25rem;
+  --text-display-md--line-height: 1.2;
+  --text-display-md--font-weight: 600;
+  
+  --text-display-sm: 1.875rem;
+  --text-display-sm--line-height: 1.25;
+  --text-display-sm--font-weight: 600;
+  
+  --text-calc-result: 2.5rem;
+  --text-calc-result--line-height: 1.2;
+  --text-calc-result--font-weight: 500;
+  
+  --text-calc-expression: 1.25rem;
+  --text-calc-expression--line-height: 1.4;
+  --text-calc-expression--font-weight: 400;
+
+  /* Touch target minimum (WCAG) */
+  --size-touch: 44px;
+
+  /* Animations */
+  --animate-fade-in: fadeIn 0.2s ease-out;
+  --animate-slide-up: slideUp 0.3s ease-out;
+  --animate-scale-in: scaleIn 0.2s ease-out;
+
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes scaleIn {
+    0% { opacity: 0; transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+}
+
+/* ============================================
+   CSS CUSTOM PROPERTIES FOR THEMING
+   ============================================ */
+
+/* 
+ * Light Theme (Default)
+ * Clean, modern design with subtle shadows and crisp visuals
+ */
+:root {
+  /* Background colors */
+  --color-background: #f8fafc;
+  --color-background-secondary: #f1f5f9;
+  --color-background-tertiary: #e2e8f0;
+
+  /* Surface colors (cards, panels, elevated elements) */
+  --color-surface: #ffffff;
+  --color-surface-elevated: #ffffff;
+
+  /* Text colors - WCAG AA compliant contrast ratios */
+  --color-text: #1e293b;           /* 12.63:1 on white */
+  --color-text-secondary: #475569; /* 7.01:1 on white */
+  --color-text-muted: #64748b;     /* 4.54:1 on white (meets AA for large text) */
+  --color-text-inverse: #ffffff;
+
+  /* Border colors */
+  --color-border: #e2e8f0;
+  --color-border-focus: #3b82f6;
+
+  /* Semantic colors */
+  --color-success: #16a34a;
+  --color-success-light: #dcfce7;
+  --color-warning: #ca8a04;
+  --color-warning-light: #fef9c3;
+  --color-error: #dc2626;
+  --color-error-light: #fee2e2;
+  --color-info: #0284c7;
+  --color-info-light: #e0f2fe;
+
+  /* Calculator-specific colors */
+  --color-calc-display: #f8fafc;
+  --color-calc-display-text: #1e293b;
+  --color-calc-button-number: #ffffff;
+  --color-calc-button-operator: #eff6ff;
+  --color-calc-button-function: #f1f5f9;
+  --color-calc-button-action: #fee2e2;
+  --color-calc-button-equals: #3b82f6;
+
+  /* Focus ring */
+  --color-focus-ring: #3b82f6;
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  /* Transitions */
+  --transition-fast: 150ms;
+  --transition-normal: 250ms;
+  --transition-slow: 350ms;
+
+  /* Typography base */
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color-scheme: light;
+}
+
+/*
+ * High-Contrast Theme
+ * Enhanced contrast for accessibility (WCAG AA minimum, targeting AAA where possible)
+ * Activated via data-theme="high-contrast" on html element
+ */
+[data-theme="high-contrast"] {
+  /* Primary color palette - Darker, higher contrast blue */
+  --color-primary-50: #e0f2fe;
+  --color-primary-100: #bae6fd;
+  --color-primary-200: #7dd3fc;
+  --color-primary-300: #38bdf8;
+  --color-primary-400: #0ea5e9;
+  --color-primary-500: #0369a1;
+  --color-primary-600: #075985;
+  --color-primary-700: #0c4a6e;
+  --color-primary-800: #0a3d5c;
+  --color-primary-900: #082f49;
+
+  /* Background colors - Pure white for maximum contrast */
+  --color-background: #ffffff;
+  --color-background-secondary: #f8fafc;
+  --color-background-tertiary: #f1f5f9;
+
+  /* Surface colors */
+  --color-surface: #ffffff;
+  --color-surface-elevated: #ffffff;
+
+  /* Text colors - Maximum contrast (black on white) */
+  --color-text: #000000;           /* 21:1 on white - WCAG AAA */
+  --color-text-secondary: #1e293b; /* 12.63:1 on white - WCAG AAA */
+  --color-text-muted: #334155;     /* 9.68:1 on white - WCAG AAA */
+  --color-text-inverse: #ffffff;
+
+  /* Border colors - More visible */
+  --color-border: #94a3b8;
+  --color-border-focus: #0369a1;
+
+  /* Semantic colors - Higher contrast versions */
+  --color-success: #15803d;
+  --color-success-light: #bbf7d0;
+  --color-warning: #a16207;
+  --color-warning-light: #fef08a;
+  --color-error: #b91c1c;
+  --color-error-light: #fecaca;
+  --color-info: #0369a1;
+  --color-info-light: #bae6fd;
+
+  /* Calculator-specific colors - High contrast */
+  --color-calc-display: #ffffff;
+  --color-calc-display-text: #000000;
+  --color-calc-button-number: #ffffff;
+  --color-calc-button-operator: #e0f2fe;
+  --color-calc-button-function: #f1f5f9;
+  --color-calc-button-action: #fecaca;
+  --color-calc-button-equals: #0369a1;
+
+  /* Focus ring - More visible */
+  --color-focus-ring: #0369a1;
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 2px;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+html {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+/* Focus styles for accessibility */
+*:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Remove default focus outline for mouse users */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ============================================
+   COMPONENT STYLES
+   ============================================ */
+
+/* Calculator button base styles */
+.calc-button {
+  min-height: 44px;
+  min-width: 44px;
+  border-radius: var(--radius-2xl);
+  font-weight: 500;
+  transition: all 150ms ease;
+  box-shadow: var(--shadow-button);
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.calc-button:hover {
+  box-shadow: var(--shadow-button-hover);
+  transform: translateY(-2px);
+}
+
+.calc-button:active {
+  box-shadow: var(--shadow-button-active);
+  transform: translateY(0);
+}
+
+.calc-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: translateY(0);
+}
+
+/* Number button variant */
+.calc-button-number {
+  background-color: var(--color-calc-button-number);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+.calc-button-number:hover {
+  background-color: var(--color-secondary-50);
+}
+
+/* Operator button variant */
+.calc-button-operator {
+  background-color: var(--color-calc-button-operator);
+  color: var(--color-primary-700);
+  border-color: var(--color-primary-200);
+}
+
+.calc-button-operator:hover {
+  background-color: var(--color-primary-100);
+}
+
+/* Function button variant */
+.calc-button-function {
+  background-color: var(--color-calc-button-function);
+  color: var(--color-text-secondary);
+  border-color: var(--color-border);
+}
+
+.calc-button-function:hover {
+  background-color: var(--color-secondary-200);
+}
+
+/* Action button variant (clear, backspace) */
+.calc-button-action {
+  background-color: var(--color-calc-button-action);
+  color: var(--color-error);
+  border-color: var(--color-error-light);
+}
+
+.calc-button-action:hover {
+  background-color: var(--color-error-light);
+}
+
+/* Equals button variant */
+.calc-button-equals {
+  background-color: var(--color-calc-button-equals);
+  color: var(--color-text-inverse);
+  border-color: transparent;
+}
+
+.calc-button-equals:hover {
+  background-color: var(--color-primary-600);
+}
+
+/* Calculator display */
+.calc-display {
+  background-color: var(--color-calc-display);
+  color: var(--color-calc-display-text);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-display);
+  padding: 1rem;
+  font-family: var(--font-mono);
+}
+
+/* Panel styles */
+.calc-panel {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-elevated);
+  padding: 1rem;
+}
+
+/* Card styles */
+.calc-card {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-soft);
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+}
+
+/* Input field styles */
+.calc-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.calc-input:focus {
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px var(--color-primary-100);
+}
+
+.calc-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* Toggle switch */
+.calc-toggle {
+  position: relative;
+  display: inline-flex;
+  height: 1.5rem;
+  width: 2.75rem;
+  align-items: center;
+  border-radius: 9999px;
+  transition: background-color 200ms ease;
+  cursor: pointer;
+}
+
+.calc-toggle[aria-checked="false"] {
+  background-color: var(--color-secondary-300);
+}
+
+.calc-toggle[aria-checked="true"] {
+  background-color: var(--color-primary-500);
+}
+
+.calc-toggle-thumb {
+  display: inline-block;
+  height: 1rem;
+  width: 1rem;
+  transform: translateX(0);
+  border-radius: 9999px;
+  background-color: white;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.1);
+  transition: transform 200ms ease;
+}
+
+.calc-toggle[aria-checked="false"] .calc-toggle-thumb {
+  transform: translateX(0.25rem);
+}
+
+.calc-toggle[aria-checked="true"] .calc-toggle-thumb {
+  transform: translateX(1.5rem);
+}
+
+/* Tab styles for mode switcher */
+.calc-tab {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 150ms ease;
+  cursor: pointer;
+}
+
+.calc-tab[aria-selected="false"] {
+  color: var(--color-text-secondary);
+}
+
+.calc-tab[aria-selected="false"]:hover {
+  color: var(--color-text);
+  background-color: var(--color-secondary-100);
+}
+
+.calc-tab[aria-selected="true"] {
+  color: var(--color-primary-700);
+  background-color: var(--color-primary-50);
+}
+
+/* Tooltip styles */
+.calc-tooltip {
+  position: absolute;
+  z-index: 50;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  background-color: var(--color-secondary-800);
+  color: white;
+  font-size: 0.875rem;
+  box-shadow: var(--shadow-elevated);
+  animation: var(--animate-fade-in);
+}
+
+/* Modal overlay */
+.calc-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgb(0 0 0 / 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  animation: var(--animate-fade-in);
+}
+
+/* Modal content */
+.calc-modal {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-elevated);
+  padding: 1.5rem;
+  max-width: 32rem;
+  width: 100%;
+  margin: 1rem;
+  animation: var(--animate-scale-in);
+}
+
+/* History entry */
+.calc-history-entry {
+  padding: 0.75rem;
+  border-radius: var(--radius-xl);
+  border: 1px solid transparent;
+  transition: all 150ms ease;
+  cursor: pointer;
+}
+
+.calc-history-entry:hover {
+  background-color: var(--color-secondary-50);
+  border-color: var(--color-border);
+}
+
+.calc-history-entry[data-pinned="true"] {
+  background-color: var(--color-primary-50);
+  border-color: var(--color-primary-100);
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+/* Screen reader only - visually hidden but accessible */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Touch target minimum size */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Scrollbar styling */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-secondary-300) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: var(--color-secondary-300);
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-secondary-400);
+}
+
+/* Text selection */
+.select-result {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* Prevent text selection */
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Safe area insets for mobile */
+.safe-area-inset-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-area-inset-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+/* High contrast mode specific utilities */
+[data-theme="high-contrast"] .hc-border-visible {
+  border-width: 2px;
+}
+
+[data-theme="high-contrast"] .hc-text-bold {
+  font-weight: 600;
+}
+
+/* ============================================
+   RESPONSIVE LAYOUT
+   ============================================ */
+
+/* Desktop fullscreen layout (≥1280px) */
+@media (min-width: 1280px) {
+  .calc-layout {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    min-height: 100vh;
+  }
+}
+
+/* Tablet layout (768-1279px) */
+@media (min-width: 768px) and (max-width: 1279px) {
+  .calc-layout {
+    display: flex;
+    flex-direction: column;
+    max-width: 768px;
+    margin: 0 auto;
+    padding: 1rem;
+    gap: 1rem;
+  }
+}
+
+/* Mobile layout (<768px) */
+@media (max-width: 767px) {
+  .calc-layout {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem;
+    gap: 0.5rem;
+    min-height: 100vh;
+  }
+
+  /* Ensure touch targets on mobile */
+  .calc-button {
+    min-height: 52px;
+    min-width: 52px;
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+
+  .calc-panel,
+  .calc-button,
+  .calc-modal-overlay {
+    display: none;
+  }
+
+  .calc-display {
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+}
