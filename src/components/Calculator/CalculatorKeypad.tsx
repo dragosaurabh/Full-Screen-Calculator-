@@ -53,11 +53,10 @@ const CalcButton: React.FC<{
                  ${variants[config.variant || 'default']}
                  ${config.span === 2 ? 'col-span-2' : ''}
                  ${isFullscreen 
-                   ? 'text-2xl lg:text-3xl xl:text-4xl px-4 py-3 h-full min-h-[60px]' 
+                   ? 'text-xl md:text-2xl lg:text-3xl min-h-[48px]' 
                    : 'min-h-[56px] text-xl px-3 py-3'}
-                 ${config.variant === 'secondary' ? (isFullscreen ? 'text-lg lg:text-xl' : 'text-sm') : ''}`}
+                 ${config.variant === 'secondary' ? (isFullscreen ? 'text-base md:text-lg' : 'text-sm') : ''}`}
       aria-label={config.label}
-      style={isFullscreen ? { height: '100%' } : undefined}
     >
       {config.label}
     </button>
@@ -217,17 +216,16 @@ export const CalculatorKeypad: React.FC<CalculatorKeypadProps> = ({
   const extraFunctions = modeFunctions[mode] || [];
 
   return (
-    <div className={`h-full flex flex-col ${isFullscreen ? 'gap-4 lg:gap-6' : 'gap-3'}`}
-         style={isFullscreen ? { height: '100%' } : undefined}>
+    <div className={`flex flex-col ${isFullscreen ? 'gap-3 md:gap-4' : 'gap-3'}`}>
       {/* Mode-specific function buttons */}
       {extraFunctions.length > 0 && (
-        <div className={`flex-shrink-0 bg-white rounded-xl border border-slate-200 shadow-sm
-                        ${isFullscreen ? 'p-4 lg:p-5 rounded-2xl' : 'p-3'}`}>
+        <div className={`bg-white rounded-xl border border-slate-200 shadow-sm
+                        ${isFullscreen ? 'p-3 md:p-4 rounded-2xl' : 'p-3'}`}>
           <div className={`text-slate-500 font-semibold uppercase tracking-wider
-                          ${isFullscreen ? 'text-sm mb-3' : 'text-xs mb-2'}`}>
+                          ${isFullscreen ? 'text-xs md:text-sm mb-2 md:mb-3' : 'text-xs mb-2'}`}>
             {mode} Functions
           </div>
-          <div className={`grid grid-cols-4 ${isFullscreen ? 'gap-3 lg:gap-4' : 'gap-2'}`}>
+          <div className={`grid grid-cols-4 ${isFullscreen ? 'gap-2 md:gap-3' : 'gap-2'}`}>
             {extraFunctions.map((config, i) => (
               <CalcButton key={i} config={config} onClick={() => handleClick(config)} disabled={disabled} isFullscreen={isFullscreen} />
             ))}
@@ -235,18 +233,16 @@ export const CalculatorKeypad: React.FC<CalculatorKeypadProps> = ({
         </div>
       )}
       
-      {/* MAIN KEYPAD - Always visible, fills remaining space in fullscreen */}
+      {/* MAIN KEYPAD - Always visible */}
       <div className={`bg-white rounded-xl border border-slate-200 shadow-sm
-                      ${isFullscreen ? 'flex-1 p-4 lg:p-5 rounded-2xl flex flex-col' : 'p-3'}`}
-           style={isFullscreen ? { minHeight: 0 } : undefined}>
-        <div className={`text-slate-500 font-semibold uppercase tracking-wider flex-shrink-0
-                        ${isFullscreen ? 'text-sm mb-3' : 'text-xs mb-2'}`}>
+                      ${isFullscreen ? 'p-3 md:p-4 rounded-2xl' : 'p-3'}`}>
+        <div className={`text-slate-500 font-semibold uppercase tracking-wider
+                        ${isFullscreen ? 'text-xs md:text-sm mb-2 md:mb-3' : 'text-xs mb-2'}`}>
           Keypad
         </div>
-        <div className={`${isFullscreen ? 'flex-1 flex flex-col justify-between' : 'space-y-2'}`}
-             style={isFullscreen ? { minHeight: 0 } : undefined}>
+        <div className={`grid gap-2 ${isFullscreen ? 'gap-2 md:gap-3' : 'gap-2'}`}>
           {basicLayout.map((row, rowIndex) => (
-            <div key={rowIndex} className={`grid grid-cols-4 ${isFullscreen ? 'gap-3 lg:gap-4 flex-1' : 'gap-2'}`}>
+            <div key={rowIndex} className={`grid grid-cols-4 gap-2 ${isFullscreen ? 'gap-2 md:gap-3' : 'gap-2'}`}>
               {row.map((config, colIndex) => (
                 <CalcButton key={colIndex} config={config} onClick={() => handleClick(config)} disabled={disabled} isFullscreen={isFullscreen} />
               ))}

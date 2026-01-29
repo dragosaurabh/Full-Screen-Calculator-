@@ -138,9 +138,7 @@ export const CalculatorLayout: React.FC<CalculatorLayoutProps> = ({
       />
       
       {/* Main Content - Calculator DOMINATES */}
-      <div className={`flex-1 flex overflow-hidden
-                      ${isFullscreen ? 'min-h-0' : 'min-h-0'}`}
-           style={isFullscreen ? { height: 'calc(100vh - 52px)' } : undefined}>
+      <div className="flex-1 flex overflow-hidden min-h-0">
         {/* Left Sidebar - Modes (supportive) */}
         {viewMode !== 'compact' && !isFullscreen && (
           <Sidebar 
@@ -152,13 +150,12 @@ export const CalculatorLayout: React.FC<CalculatorLayoutProps> = ({
         )}
         
         {/* CALCULATOR - THE MAIN EVENT */}
-        <main className={`flex-1 flex flex-col min-w-0 transition-all
-                         ${isFullscreen ? 'h-full overflow-hidden' : 'overflow-hidden'}`}>
-          {/* Calculator fills available space - FIXED HEIGHT IN FULLSCREEN */}
-          <div className={`flex flex-col h-full
-                          ${viewMode === 'maximized' || isFullscreen ? 'max-w-5xl w-full mx-auto' : ''}
-                          ${viewMode === 'compact' ? 'max-w-lg mx-auto' : ''}`}
-               style={isFullscreen ? { height: '100%', minHeight: '100%' } : undefined}>
+        <main className={`flex-1 flex flex-col min-w-0 min-h-0
+                         ${isFullscreen ? 'overflow-hidden' : 'overflow-hidden'}`}>
+          {/* Calculator fills available space */}
+          <div className={`flex-1 min-h-0 overflow-y-auto
+                          ${viewMode === 'maximized' || isFullscreen ? 'max-w-4xl w-full mx-auto' : ''}
+                          ${viewMode === 'compact' ? 'max-w-lg mx-auto' : ''}`}>
             <MainCalculator 
               mode={mode}
               onCalculation={handleCalculation}

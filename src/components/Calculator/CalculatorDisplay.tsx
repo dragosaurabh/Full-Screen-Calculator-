@@ -48,14 +48,16 @@ export const CalculatorDisplay: React.FC<CalculatorDisplayProps> = ({
 }) => {
   const resultRef = useRef<HTMLDivElement>(null);
 
-  // Auto-resize textarea
+  // Auto-resize textarea with max height constraint
   useEffect(() => {
     const input = inputRef.current;
     if (input && 'style' in input) {
       input.style.height = 'auto';
-      input.style.height = `${Math.min(input.scrollHeight, 80)}px`;
+      // Limit max height: 80px normal, 120px fullscreen
+      const maxHeight = isFullscreen ? 120 : 80;
+      input.style.height = `${Math.min(input.scrollHeight, maxHeight)}px`;
     }
-  }, [expression, inputRef]);
+  }, [expression, inputRef, isFullscreen]);
 
   // Animate result
   useEffect(() => {
@@ -74,16 +76,16 @@ export const CalculatorDisplay: React.FC<CalculatorDisplayProps> = ({
   };
 
   return (
-    <div className={`calculator-display bg-slate-900 rounded-2xl shadow-xl overflow-hidden
+    <div className={`calculator-display bg-slate-900 rounded-2xl shadow-xl
                     ${isFullscreen ? 'rounded-3xl' : ''}`}>
       {/* EXPRESSION INPUT - Where you type */}
-      <div className={`p-4 ${isFullscreen ? 'p-6 lg:p-8' : ''}`}>
+      <div className={`p-4 ${isFullscreen ? 'p-4 md:p-6' : ''}`}>
         <div className="flex items-center justify-between mb-2">
           <label className={`text-slate-500 font-medium uppercase tracking-wider
-                           ${isFullscreen ? 'text-sm' : 'text-xs'}`}>
+                           ${isFullscreen ? 'text-xs md:text-sm' : 'text-xs'}`}>
             Expression
           </label>
-          <span className={`text-slate-600 ${isFullscreen ? 'text-sm' : 'text-xs'}`}>
+          <span className={`text-slate-600 ${isFullscreen ? 'text-xs md:text-sm' : 'text-xs'}`}>
             Type or use keypad below
           </span>
         </div>
@@ -96,12 +98,13 @@ export const CalculatorDisplay: React.FC<CalculatorDisplayProps> = ({
           rows={1}
           className={`w-full bg-slate-800 text-white font-mono 
                      placeholder:text-slate-600 border-2 border-slate-700 rounded-xl
-                     outline-none resize-none
+                     outline-none resize-none overflow-hidden
                      focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20
                      leading-tight tracking-wide
                      ${isFullscreen 
-                       ? 'text-3xl lg:text-4xl xl:text-5xl px-6 py-4 rounded-2xl' 
-                       : 'text-2xl md:text-3xl px-4 py-3'}`}
+                       ? 'text-2xl md:text-3xl lg:text-4xl px-4 md:px-6 py-3 md:py-4 rounded-2xl max-h-[100px]' 
+                       : 'text-2xl md:text-3xl px-4 py-3 max-h-[80px]'}`}
+          style={{ resize: 'none' }}
           aria-label="Calculator expression"
           autoComplete="off"
           spellCheck={false}
@@ -110,45 +113,45 @@ export const CalculatorDisplay: React.FC<CalculatorDisplayProps> = ({
       </div>
       
       {/* RESULT OUTPUT - What you get */}
-      <div className={`px-4 pb-4 border-t border-slate-800 ${isFullscreen ? 'px-6 lg:px-8 pb-6 lg:pb-8' : ''}`}>
-        <div className={`flex items-center justify-between ${isFullscreen ? 'py-3' : 'py-2'}`}>
+      <div className={`px-4 pb-4 border-t border-slate-800 ${isFullscreen ? 'px-4 md:px-6 pb-4 md:pb-6' : ''}`}>
+        <div className={`flex items-center justify-between ${isFullscreen ? 'py-2 md:py-3' : 'py-2'}`}>
           <label className={`text-slate-500 font-medium uppercase tracking-wider
-                           ${isFullscreen ? 'text-sm' : 'text-xs'}`}>
+                           ${isFullscreen ? 'text-xs md:text-sm' : 'text-xs'}`}>
             Result
           </label>
           {isCalculating && (
-            <div className={`flex items-center gap-2 text-blue-400 ${isFullscreen ? 'text-base' : 'text-sm'}`}>
+            <div className={`flex items-center gap-2 text-blue-400 ${isFullscreen ? 'text-sm md:text-base' : 'text-sm'}`}>
               <div className={`border-2 border-blue-400/30 border-t-blue-400 rounded-full animate-spin
-                             ${isFullscreen ? 'w-4 h-4' : 'w-3 h-3'}`} />
+                             ${isFullscreen ? 'w-3 h-3 md:w-4 md:h-4' : 'w-3 h-3'}`} />
               Calculating...
             </div>
           )}
         </div>
         
         <div ref={resultRef} className={`flex items-center justify-end
-                                        ${isFullscreen ? 'min-h-[80px] lg:min-h-[100px]' : 'min-h-[56px]'}`} 
+                                        ${isFullscreen ? 'min-h-[60px] md:min-h-[80px]' : 'min-h-[56px]'}`} 
              role="status" aria-live="polite">
           {error ? (
             <div className={`w-full flex items-center gap-2 text-red-400 bg-red-500/10 rounded-lg border border-red-500/20
-                           ${isFullscreen ? 'p-4 text-base' : 'p-3 text-sm'}`}>
-              <svg className={`flex-shrink-0 ${isFullscreen ? 'w-6 h-6' : 'w-5 h-5'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                           ${isFullscreen ? 'p-3 md:p-4 text-sm md:text-base' : 'p-3 text-sm'}`}>
+              <svg className={`flex-shrink-0 ${isFullscreen ? 'w-5 h-5 md:w-6 md:h-6' : 'w-5 h-5'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
               <span>{error}</span>
             </div>
           ) : result !== null ? (
             <div className="flex items-center gap-3">
-              <span className={`text-slate-600 ${isFullscreen ? 'text-3xl lg:text-4xl' : 'text-2xl'}`}>=</span>
+              <span className={`text-slate-600 ${isFullscreen ? 'text-2xl md:text-3xl' : 'text-2xl'}`}>=</span>
               <span className={`font-bold text-white font-mono tracking-tight select-all
                               ${isFullscreen 
-                                ? 'text-5xl lg:text-6xl xl:text-7xl' 
+                                ? 'text-4xl md:text-5xl lg:text-6xl' 
                                 : 'text-4xl md:text-5xl'}`}>
                 {result}
               </span>
             </div>
           ) : (
             <span className={`font-bold text-slate-700 font-mono
-                            ${isFullscreen ? 'text-5xl lg:text-6xl xl:text-7xl' : 'text-4xl md:text-5xl'}`}>
+                            ${isFullscreen ? 'text-4xl md:text-5xl lg:text-6xl' : 'text-4xl md:text-5xl'}`}>
               0
             </span>
           )}

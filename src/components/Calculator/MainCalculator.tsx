@@ -255,15 +255,14 @@ export const MainCalculator: React.FC<MainCalculatorProps> = ({
   // 2. Result (output)  
   // 3. Keypad (ALWAYS VISIBLE)
   return (
-    <div className={`flex flex-col h-full
+    <div className={`flex flex-col
                     ${viewMode === 'compact' ? 'max-w-md mx-auto w-full' : ''}
                     ${isFullscreen 
-                      ? 'p-4 lg:p-6 xl:p-8' 
-                      : 'p-3'}`}
-         style={isFullscreen ? { height: '100%', display: 'flex', flexDirection: 'column' } : undefined}>
+                      ? 'h-full p-4 md:p-6 lg:p-8' 
+                      : 'h-full p-3 overflow-y-auto'}`}>
       
       {/* DISPLAY: Expression + Result - Fixed height, never shrinks */}
-      <div className={`flex-shrink-0 ${isFullscreen ? 'mb-4 lg:mb-6' : 'mb-3'}`}>
+      <div className={`flex-shrink-0 ${isFullscreen ? 'mb-4 md:mb-6' : 'mb-3'}`}>
         <CalculatorDisplay
           expression={expression}
           result={result}
@@ -277,9 +276,8 @@ export const MainCalculator: React.FC<MainCalculatorProps> = ({
         />
       </div>
       
-      {/* KEYPAD: Primary interaction - ALWAYS VISIBLE, fills remaining space */}
-      <div className={`flex-1 min-h-0 ${isFullscreen ? 'overflow-hidden' : 'overflow-y-auto'}`}
-           style={isFullscreen ? { flex: '1 1 auto', minHeight: 0 } : undefined}>
+      {/* KEYPAD: Primary interaction - ALWAYS VISIBLE */}
+      <div className="flex-shrink-0">
         <CalculatorKeypad
           mode={mode}
           onInput={handleInput}

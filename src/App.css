@@ -153,6 +153,18 @@ kbd {
   caret-color: #60a5fa;
 }
 
+/* Prevent textarea resize - CRITICAL */
+.calculator-display textarea {
+  resize: none !important;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Hide resize handle in all browsers */
+.calculator-display textarea::-webkit-resizer {
+  display: none !important;
+}
+
 /* History item hover lift */
 .history-item {
   transition: transform 0.15s ease, box-shadow 0.15s ease;
